@@ -1,16 +1,13 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import redis
+import threading
 
 rd = redis.Redis(host='redis-17407.c244.us-east-1-2.ec2.redns.redis-cloud.com',
                 port=17407,
                 password='7gg1ZORP45xlZYfYeeovlxRsionjKv9T'
                 )
 
-
-rd.set("ryanaraujo@gmail.com","Ryan Araujo")
-
-print(rd.get("ryanaraujo@gmail.com"))
 
 mydb = ''
 class Connect:
@@ -325,6 +322,8 @@ class HandlerProduto:
         except:
             print("Erro ao deletar")
 
+autenticacao = ""
+usuario = ""
 
 def menuCompras():
     global option1
@@ -406,23 +405,65 @@ def menuProduto():
         elif option1 == '4': HandlerProduto.delete()
         else: print("Opção inválida")
 
-option0 = input("""\n####MENU####\n
-1 - CRUD de Produto\n
-2 - CRUD de Cliente\n
-3 - CRUD de Compras\n
-4 - CRUD de Vendedor\n
-0 - Sair\n
-\nOpção: """)
-option1 = ''
+def fazer_login():
+    global autenticacao
+    global usuario
+    username = input("Nome de usuário: ")
+    password = input("Senha: ")
 
-if option0 == '0':
-    print("Tchau!")
-if option0 == '1':
-    menuProduto()
-elif option0 == '2':
-    menuCliente()
-elif option0 == '3':
-    menuCompras()
-elif option0 == '4':
-    menuVendedor()
-else: print("Opção não entendida!")
+    if username != "" and password != "":
+        rd.setex(username, 30, password)
+        print("Login bem-sucedido!")
+        usuario = username
+        autenticacao = True
+    else:
+        print("Credenciais inválidas.")
+        fazer_login()
+
+def verificar_autenticacao(usuario):
+    if rd.ttl(usuario) <= 1: 
+        autenticacao = False
+        return autenticacao
+    else:
+        autenticacao = True
+        return True
+
+
+while autenticacao != True:
+    username = input("Verificação de autenticação necessária, Digite seu nome de usuário: ")
+    if verificar_autenticacao(username) == False:
+        print("Por favor, faça login")
+        fazer_login()
+    else:
+        print("Usuário autenticado.")
+        break
+
+def execucao():
+    global option1
+    while autenticacao:
+        option0 = input("""\n####MENU####\n
+        1 - CRUD de Produto\n
+        2 - CRUD de Cliente\n
+        3 - CRUD de Compras\n
+        4 - CRUD de Vendedor\n
+        0 - Sair\n
+        \nOpção: """)
+        option1 = ''
+
+        if option0 == '0':
+            print("Tchau!")
+        if option0 == '1':
+            menuProduto()
+        elif option0 == '2':
+            menuCliente()
+        elif option0 == '3':
+            menuCompras()
+        elif option0 == '4':
+            menuVendedor()
+        else: print("Opção não entendida!")
+
+thread_execucao = threading.Thread(target=execucao)
+thread_verificacao = threading.Thread(target=verificar_autenticacao(usuario=usuario))
+
+thread_execucao.start()
+thread_verificacao.start()

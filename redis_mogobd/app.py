@@ -12,12 +12,12 @@ print("Conectado ao Redis com sucesso")
 mydb = ''
 class Connect:
     global mydb
+    print("\nConectando ao MongoDB...")
     uri = "mongodb+srv://ryanaraujo:fatec@cluster0.ics2su3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     # Create a new client and connect to the server
     client = MongoClient(uri, server_api=ServerApi('1'))
     # Send a ping to confirm a successful connection
     try:
-        print("\nConectando ao MongoDB...")
         client.admin.command('ping')
         print("Conectado com sucesso ao MongoDB!\n")
     except Exception as e:
@@ -73,12 +73,18 @@ class HandlerCliente:
         else: print("Cliente não encontrado!")
         print("Erro ao buscar cliente!")
 
-    def update():
+    def update(self):
         global mydb
         mycol = mydb.Cliente
         print("\n####UPDATE####")
         nome = input("Nome do cliente que será atualizado: ")
-        print("1 - Nome\n2 - CPF\n3 - Data de nascimento\n4 - Telefone\n5 - Endereço")
+        clienteObjeto = mycol.find_one({"cli_nome": nome})
+        if not clienteObjeto:
+            print("\nErro ao encontrar cliente!")
+            self.update()
+        else: rd.set(nome, clienteObjeto)
+        print(rd.get(nome))
+        print("1 - Nome\n2 - CPF\n3 - Data de nascimento\n4 - Telefone\n5 - Endereço\n6 - Lista de favoritos")
         option2 = input("Opção: ")
         if option2 == '1':
             newNome = input("Novo nome: ")
@@ -101,6 +107,20 @@ class HandlerCliente:
             newCidade = input("Nova cidade: ")
             newEstado = input("Novo estado: ")
             mycol.update_one({"cli_nome": nome}, {"$set": {"cli_endereco": {"cep": newCep, "numero": newNumeroCasa, "rua": newRua, "bairro": newBairro, "cidade": newCidade, "estado": newEstado}}})
+        elif option2 == '6':
+            print("Qual operação você deseja realizar: ")
+            print("1 - Adicionar um produto\n2 - Remover um produto\n")
+            option3 = input("Opção: ")
+            if option3 == "1":
+                newFavorito = input("Nome do novo produto a ser adicionado aos favoritos: ")
+                try:
+                    findFavorito = HandlerProduto.findOne(newFavorito)
+                    mycol.update_one({"cli_nome": nome}, {
+                        "$set": {"cli_favoritos": 
+                            [{findFavorito}]
+                            }})
+                except:
+                    print("Erro ao encontrar produto!")
 
     def delete():
         global mydb
@@ -283,7 +303,7 @@ class HandlerProduto:
             print("Produto não encontrado!")
             self.update()
         if query_procura:
-            print("\nO que você deseja atualizar?\n1 - Nome\n2 - CPF/CNPJ\n3 - Telefone\n4 - Email\n5 - Endereço")
+            print("\nO que você deseja atualizar?\n1 - Nome\n2 - Descrição\n3 - Preço\n4 - Quantidade\n")
             option2 = input("\nOpção: ")
             if option2 == '1':
                 new_nome = input("Novo nome: ")
@@ -335,7 +355,7 @@ def menuCompras():
 def menuCliente():
     global autenticacao
     global option1
-    while option1 != '0' and autenticacao:
+    while autenticacao:
         option1 = input("""\n####MENU####
 \n1 - Cadastrar
 \n2 - Encontrar
@@ -353,6 +373,7 @@ def menuCliente():
             HandlerCliente.update()
         elif option1 == '4':
             HandlerCliente.delete()
+        elif option1 == '0': break
         else:
             global option0
             option0 = ''
@@ -386,7 +407,7 @@ def menuVendedor():
 def menuProduto():
     global autenticacao
     global option1
-    while option1 != '0' and autenticacao:
+    while autenticacao:
         option1 = input("""\n####MENU####
 \n1 - Cadastrar
 \n2 - Encontrar
@@ -399,8 +420,10 @@ def menuProduto():
         elif option1 == '2':
             produto = input("Nome do produto: ")
             HandlerProduto.findOne(produto)
-        elif option1 == '3': HandlerProduto.update()
+        elif option1 == '3':
+            HandlerProduto.update()
         elif option1 == '4': HandlerProduto.delete()
+        elif option1 == '0': break
         else:
             global option0
             option0 = ''
@@ -414,7 +437,7 @@ def login():
 
     if user_email != "" and password != "":
         try:
-            rd.setex("token", 20, user_email)
+            rd.setex("token", 40, user_email)
             print("\nLogin bem-sucedido!")
             usuario = user_email
             autenticacao = True
@@ -427,34 +450,35 @@ def login():
 
 def verificar_autenticacao():
     global autenticacao
-    if rd.ttl("token") <= 1:
-        print(rd.ttl("token"))
+    print(f"\nautenticação: {autenticacao}")
+    tempo = int(rd.ttl("token"))
+    if tempo < 1:
+        print(tempo)
         autenticacao = False
+        print("\nTempo de login expirado!")
         return autenticacao
     else:
+        print(rd.ttl("token"))
         autenticacao = True
         return autenticacao
 
 def fazer_login():
     global autenticacao
     while autenticacao != True:
-        if verificar_autenticacao() == False:
-            print("Por favor, faça login")
-            login()
-        else:
-            print("Usuário autenticado.")
-            break
+        print("Por favor, faça login")
+        login()
+    print("Usuário autenticado.")
 
 def menu():
     while verificar_autenticacao():
         global option1
         option0 = input("""\n####MENU####\n
-        1 - CRUD de Produto\n
-        2 - CRUD de Cliente\n
-        3 - CRUD de Compras\n
-        4 - CRUD de Vendedor\n
-        0 - Sair\n
-        \nOpção: """)
+1 - CRUD de Produto\n
+2 - CRUD de Cliente\n
+3 - CRUD de Compras\n
+4 - CRUD de Vendedor\n
+0 - Sair\n
+\nOpção: """)
         verificar_autenticacao()
         option1 = ''
         if option0 == '0':
@@ -475,8 +499,8 @@ print(33*"#")
 
 while True:
     print("\nMenu principal\n")
-    print("1-Entrar")
-    print("2-Sair")
+    print("1 - Entrar")
+    print("2 - Sair")
     opcao = input("Opção: ")
     if opcao == '1':
         fazer_login()

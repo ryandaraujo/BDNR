@@ -140,36 +140,7 @@ class HandlerCompras:
             print(query)
         except:
             print("Compra não encontrada!")
-    def update():
-        global mydb
-        mycol = mydb.Compras
-        print("####UPDATE####")
-        compra = ''
-        id_compra = input("Informe o ID da compra a ser atualizada: ")
-        try:
-            compra = mycol.find_one({"com_id": id_compra})
-        except:
-            print("Compra não encontrada!")
-        print("1 - Cliente\n2 - Itens\n")
-        option2 = input("Opção: ")
-        if option2 == '1':
-            newNome = input("Nome do novo cliente: ")
-            try:
-                new_cliente = HandlerCliente.findOne(newNome)
-                mycol.update_one({"com_id": id_compra}, {"$set": {"com_cli_id": new_cliente["_id"]}})
-            except:
-                print("Cliente não encontrado!")
-        elif option2 == '2':
-            new_item = input("Novo item: ")
-            try:
-                new_produto = HandlerProduto.findOne(new_item)
-                lista_produtos = compra["com_itens"]
-                lista_produtos.append(new_produto)
-                mycol.update_one({"com_id": id_compra}, {"$set": {"com_itens": lista_produtos}})
-            except:
-                print("Produto não encotrado!")
-        else:
-            print("Opção não entendida!")
+
 
     def delete():
         global mydb
@@ -303,8 +274,32 @@ class HandlerProduto:
             query = mycol.find_one({"pro_nome": produto})
             print(query)
         except: print("Produto não encontrado!")
-    def update():
-        pass
+    def update(self):
+        global mydb
+        mycol = mydb.Produto
+        nome_produto = input("\nNome do produto a ser atualizado: ")
+        try:
+            query_procura = mycol.find_one({"pro_nome": nome_produto})
+        except:
+            print("Produto não encontrado!")
+            self.update()
+        if query_procura:
+            print("\nO que você deseja atualizar?\n1 - Nome\n2 - Descrição\n3 - Preço\n4 - Quantidade\n")
+            option2 = input("\nOpção: ")
+            if option2 == '1':
+                new_nome = input("Novo nome: ")
+                mycol.update_one({"pro_nome": nome_produto}, {"$set": {"pro_nome": new_nome}})
+            elif option2 == '2':
+                new_desc = input("Nova descrição: ")
+                mycol.update_one({"pro_nome": nome_produto}, {"$set": {"pro_descricao": new_desc}})
+            elif option2 == '3':
+                new_preco = int(input("Novo preço: "))
+                mycol.update_one({"pro_nome": nome_produto}, {"$set": {"pro_preco": new_preco}})
+            elif option2 == '4':
+                new_quant = input("Nova quantidade: ")
+                mycol.update_one({"pro_nome": nome_produto}, {"$set": {"pro_quantidade": new_quant}})
+            else: print("Opção não entendida :( ")
+            option2 = ''
     def delete():
         global mydb
         mycol = mydb.Produto

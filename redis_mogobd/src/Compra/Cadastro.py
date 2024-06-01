@@ -13,15 +13,15 @@ def Compra(mydb):
 
     mydoc = mycol3.find_one({"_id":ObjectId (Usuario)})
     mydoca = mycol2.find_one({"_id":ObjectId (Produto)})
-    preco = mydoca["Preco"]
-    vendedor = mydoca["Vendedor"]
-    NomeVendedorid = vendedor["NomeVendedor"]
-    Telefone = vendedor["Telefone"]
+    preco = mydoca["preco"]
+    vendedor = mydoca["vendedor"]
+    NomeVendedorid = vendedor["nomeVendedor"]
+    Telefone = vendedor["telefone"]
     
     mydict = {
         "usuarioID":{"_id":ObjectId (Usuario) },
         "produtoID":{"_id":ObjectId (Produto) },
-        "totalCompra":mydoca["Nome"],
+        "totalCompra":mydoca["nome"],
         "preco":preco,
         "nomeVendedor":NomeVendedorid,
         "telefone":Telefone,

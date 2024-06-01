@@ -10,11 +10,9 @@ def PegarUsuarios(mydb):
     return mydoc
 
 def UsuariobyID(mydb):
-    #Query
     PegarUsuarios(mydb)
-    _id =  input(str('escreva seu id do Usuario:'))
+    _id =  input('Escreva o id do usuário: ')
     mycol = mydb.Cliente
-    print("\n####QUERY####")
     myquery = { "_id":ObjectId (_id) }
     mydoc = mycol.find_one(myquery)
     return mydoc

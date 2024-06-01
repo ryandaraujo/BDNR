@@ -4,9 +4,9 @@ import Produto.FindQuery as Buscar
 
 def ListaDesejos(mydb):
     buscaUser.PegarUsuarios(mydb)
-    Usuario =  input('Escreva o ID do usuário:')
+    Usuario =  input('Escreva o ID do usuário: ')
     Buscar.PegarProdutos(mydb)
-    Produto  =  input('Escreva seu id do Produto que deseja Salvar:')
+    Produto  =  input('Escreva seu id do produto que deseja favoritar: ')
 
     mycol = mydb.Cliente
     mycol2 = mydb.Produto
@@ -15,7 +15,7 @@ def ListaDesejos(mydb):
     
     
     newvalues = { "$push": {
-    "lista_Desejo":mydoca
+    "favoritos":mydoca
     }
     }
     print("\n#### lista de desejos atualizada com sucesso ####") 
@@ -25,11 +25,11 @@ def ListaDesejos(mydb):
         print(x) 
     execucao = True
     while execucao:
-        print('''Deseja Continuar Comprando:\n
+        print('''Deseja adicionar outro produto a lista de favoritos?\n
     0 - Voltar\n
     1 - Sim\n
     2 - Não\n''')
-        escolha = input('Escolha Uma opção: ')
+        escolha = input('Escolha uma opção: ')
         match escolha:
             case '0':
                 break

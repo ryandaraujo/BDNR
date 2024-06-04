@@ -12,9 +12,8 @@ import Usuario.ListaFavoritos as Favoritos
 import Compra.FindQuery as BuscaCompra
 import vendedor as Vendedor
 
-def CaseUsuario(mydb):
-    execucao = True
-    while execucao:
+def CaseUsuario(mydb, conR, auth, token):
+    while token:
         print('''Opções\n
     0 - Voltar\n
     1 - Cadastrar usuário\n
@@ -25,26 +24,29 @@ def CaseUsuario(mydb):
     6 - Favoritar Produto\n
         ''')
         escolha = input('Escolha uma opção: ')
-        match escolha:
-            case '0':
-                return
-            case '1':
-                CadastroCliente.CadastrarUsuario(mydb)
-            case '2':
-                BuscarUsuario.PegarUsuarios(mydb)
-            case '3':
-                BuscarUsuario.UsuariobyID(mydb)
-            case '4':
-                DeletarUsuario.DeletarUsuarioID(mydb)
-            case '5':
-                AtualizacaoUsuario.AtualizarUsuarioID(mydb)
-            case '6':
-                Favoritos.ListaDesejos(mydb)
+        auth()
+        if token is None:
+            return
+        else:
+            match escolha:
+                case '0':
+                    return
+                case '1':
+                    CadastroCliente.CadastrarUsuario(mydb)
+                case '2':
+                    BuscarUsuario.PegarUsuarios(mydb, conR)
+                case '3':
+                    BuscarUsuario.UsuariobyID(mydb)
+                case '4':
+                    DeletarUsuario.DeletarUsuarioID(mydb)
+                case '5':
+                    AtualizacaoUsuario.AtualizarUsuarioID(mydb)
+                case '6':
+                    Favoritos.ListaDesejos(mydb)
 
 
-def CaseProduto(mydb):
-    execucao = True
-    while execucao:
+def CaseProduto(mydb, auth, token):
+    while token:
         print('''Opções\n
     0 - Voltar\n
     1 - Cadastrar produto\n
@@ -52,21 +54,25 @@ def CaseProduto(mydb):
     4 - Atualizar Produto por ID\n
     5 - Deletar Produto\n''')
         escolha = input('escolha Uma Opção:')
-        match escolha:
-            case '0':
-                break
-            case '1':
-                CadastroProduto.CadastrarProduto(mydb)
-            case '3':
-                BuscarProdutos.ProdutosbyID(mydb)
-            case '4':
-                AtualizarProdutoByID.AtualizarProdutoID(mydb)
-            case '5':
-                DeletarProdutoID.DeletarProdutoID(mydb)
-                
+        auth()
+        if token is None:
+            return
+        else:
+            match escolha:
+                case '0':
+                    break
+                case '1':
+                    CadastroProduto.CadastrarProduto(mydb)
+                case '3':
+                    BuscarProdutos.ProdutosbyID(mydb)
+                case '4':
+                    AtualizarProdutoByID.AtualizarProdutoID(mydb)
+                case '5':
+                    DeletarProdutoID.DeletarProdutoID(mydb)
+                    
 
 
-def CaseCompra(mydb):
+def CaseCompra(mydb, auth, token):
     execucao = True
     while execucao:
         print('''Escolha Uma Opções\n
@@ -75,17 +81,21 @@ def CaseCompra(mydb):
     2 - Buscar todas compras\n
     3 - Buscar compra por id\n''')
         escolha = input('escolha Uma Opção: ')
-        match escolha:
-            case '0':
-                return
-            case '1':
-                ComprarProduto.Compra(mydb)
-            case '2':
-                BuscaCompra.PegarCompras(mydb)
-            case '3':
-                BuscaCompra.ComprasbyID(mydb)
+        auth()
+        if token is None:
+            return
+        else:
+            match escolha:
+                case '0':
+                    return
+                case '1':
+                    ComprarProduto.Compra(mydb)
+                case '2':
+                    BuscaCompra.PegarCompras(mydb)
+                case '3':
+                    BuscaCompra.ComprasbyID(mydb)
 
-def CaseVendedor(mydb):
+def CaseVendedor(mydb, auth, token):
     execucao = True
     while execucao:
         print('''Opções\n

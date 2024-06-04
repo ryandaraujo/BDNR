@@ -17,7 +17,7 @@ def Login(mydb):
     senha = input("\nDigite a senha do usuário: ")
     if email and senha:
         JWT = str(uuid.uuid4())
-        conR.setex("token", 50, JWT)
+        conR.setex("token", 5, JWT)
         os.system('cls' if os.name == 'nt' else 'clear')
         Menu(mydb)
     else:
@@ -26,6 +26,7 @@ def Login(mydb):
 def Autenticacao():
     global token
     token = conR.get("token")
+    return token
 
 def Menu(mydb):
     global token
@@ -35,7 +36,7 @@ def Menu(mydb):
         print("Você precisa fazer login novamente!")
     while token:
         Autenticacao()
-        os.system('cls' if os.name == 'nt' else 'clear')
+        print(f"Autenticação: {Autenticacao()}")
         print('''Escolha Uma Opção:\n
     1 - Menu compras\n
     2 - Menu usuário\n
@@ -44,17 +45,23 @@ def Menu(mydb):
     0 - Sair
     ''')
         escolha = input('Opção: ')
-        match escolha:
-            case '0':
-                break
-            case '1':
-                ListaCase.CaseCompra(mydb)
-            case '2':
-                ListaCase.CaseUsuario(mydb, conR)
-            case '3':
-                ListaCase.CaseProduto(mydb)
-            case '4':
-                ListaCase.CaseVendedor(mydb)
+        Autenticacao()
+        if token is None:
+            conR.flushall()
+            print("Você precisa fazer login novamente!")
+            return
+        else:
+            match escolha:
+                case '0':
+                    break
+                case '1':
+                    ListaCase.CaseCompra(mydb, Autenticacao, token)
+                case '2':
+                    ListaCase.CaseUsuario(mydb, conR, Autenticacao, token)
+                case '3':
+                    ListaCase.CaseProduto(mydb, Autenticacao, token)
+                case '4':
+                    ListaCase.CaseVendedor(mydb, Autenticacao, token)
 
 
 class JSONEncoder(json.JSONEncoder):

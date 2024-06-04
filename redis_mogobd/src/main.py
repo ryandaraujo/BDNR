@@ -12,15 +12,15 @@ mydb = client.Mercado_Livre
 
 
 while True:
-  print(32*"#")
+  print(31*"#")
   print('# Bem-vindo ao Mercado Livre! #')
-  print(32*"#")
+  print(31*"#")
   print("1 - Entrar")
   print("0 - Sair")
   option = int(input("Digite a opção desejada: "))
   match(option):
     case 1:
       Login(mydb)
-    case 2:
+    case 0:
       os.system('cls' if os.name == 'nt' else 'clear')
       break

@@ -1,4 +1,4 @@
-from FindQuery import PegarUsuarios as listar
+from Usuario.FindQuery import PegarUsuarios as listar
 from bson.objectid import ObjectId
 
 

@@ -3,6 +3,8 @@ import json
 import os
 import redis
 from bson import ObjectId
+import pymongo
+from pymongo.server_api import ServerApi
 
 import ListaCase
 
@@ -12,12 +14,29 @@ conR = redis.Redis(
     password='7gg1ZORP45xlZYfYeeovlxRsionjKv9T'
 )
 
-def Login(mydb):
+uri = "mongodb+srv://ryanaraujo:fatec@cluster0.ics2su3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+client = pymongo.MongoClient(uri, server_api=ServerApi('1'))
+mydb = client.Mercado_Livre
+
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
+
+
+def Login():
+    global mydb
     email = input("\nDigite o email do usuário: ")
     senha = input("\nDigite a senha do usuário: ")
     if email and senha:
-        JWT = str(uuid.uuid4())
-        conR.setex("token", 5, JWT)
+        mycol = mydb.Cliente
+        users = list(mycol.find())
+        jwt = str(uuid.uuid4())
+        conR.setex("token", 10, jwt)
+        if users: conR.set("users", JSONEncoder().encode(users))
+        print(conR.get("users"))
         os.system('cls' if os.name == 'nt' else 'clear')
         Menu(mydb)
     else:
@@ -62,10 +81,3 @@ def Menu(mydb):
                     ListaCase.CaseProduto(mydb, Autenticacao, token)
                 case '4':
                     ListaCase.CaseVendedor(mydb, Autenticacao, token)
-
-
-class JSONEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, ObjectId):
-            return str(o)
-        return json.JSONEncoder.default(self, o)

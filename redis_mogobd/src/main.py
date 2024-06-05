@@ -1,14 +1,6 @@
-import pymongo
-from pymongo.server_api import ServerApi
 import os
 
 from login import Login
-
-uri = "mongodb+srv://ryanaraujo:fatec@cluster0.ics2su3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-client = pymongo.MongoClient(uri, server_api=ServerApi('1'))
-
-global mydb
-mydb = client.Mercado_Livre
 
 
 while True:
@@ -20,7 +12,7 @@ while True:
   option = int(input("Digite a opção desejada: "))
   match(option):
     case 1:
-      Login(mydb)
+      Login()
     case 0:
       os.system('cls' if os.name == 'nt' else 'clear')
       break

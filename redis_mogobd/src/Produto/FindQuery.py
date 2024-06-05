@@ -1,5 +1,3 @@
-from bson.objectid import ObjectId
-
 def PegarProdutos(mydb):
     mycol = mydb.Produto
     print("\n####SORT####") 
@@ -9,13 +7,13 @@ def PegarProdutos(mydb):
         print("\n")
     return mydoc
 
-def ProdutosbyID(mydb):
+def ProdutosNome(mydb):
     #Query
     PegarProdutos(mydb)
-    _id =  input(str('Escreva o id do seu produto:'))
+    nome =  input('Escreva o nome do produto:')
     mycol = mydb.Produto
     print("\n####QUERY####")
-    myquery = { "_id":ObjectId (_id) }
+    myquery = { "nome": nome }
     mydoc = mycol.find_one(myquery)
     print(mydoc)
     return mydoc

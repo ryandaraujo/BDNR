@@ -5,17 +5,16 @@ global mydb
 def CadastrarProduto(mydb):
     Nome =  input('Nome do produto: ')
     Descricao =  input('Descrição do produto: ')
-    Preco =  input(float('Escreva seu Preço: '))
-    Quantidade_Estoque =  input(int('Quantidade desse produto em estoque: '))
+    Preco =  float(input('Escreva seu Preço: '))
+    Quantidade_Estoque =  int(input('Quantidade desse produto em estoque: '))
     NomeVendedor =  input('Nome do vendedor: ')
-    
 
     mycol = mydb.Produto
-    
+
     print("\n ##### Produto Inserido ###")
     mydict = {
         "nome":Nome,
-        "dataProduto": datetime.date(),
+        "dataProduto": datetime.datetime.now(),
         "descricao":Descricao,
         "preco":Preco,
         "quantidadeEstoque":Quantidade_Estoque,

@@ -1,3 +1,5 @@
+import json
+
 import Produto.deletar as DeletarUsuario
 import Usuario.deletar  as DeletarUsuario
 import Usuario.update as AtualizacaoUsuario
@@ -13,6 +15,9 @@ import Compra.FindQuery as BuscaCompra
 import vendedor as Vendedor
 
 def CaseUsuario(mydb, conR, auth, token):
+    mycol = mydb.Cliente
+    users = json.dumps(mycol.find())
+    conR.set("users-mongo", users)
     while token:
         print('''Opções\n
     0 - Voltar\n
@@ -50,9 +55,10 @@ def CaseProduto(mydb, auth, token):
         print('''Opções\n
     0 - Voltar\n
     1 - Cadastrar produto\n
-    3 - buscar Produto por ID\n
-    4 - Atualizar Produto por ID\n
-    5 - Deletar Produto\n''')
+    2 - buscar Produto por nome\n
+    3 - Atualizar Produto por ID\n
+    4 - Deletar Produto\n
+    5 - Listar produtos''')
         escolha = input('escolha Uma Opção:')
         auth()
         if token is None:
@@ -63,18 +69,16 @@ def CaseProduto(mydb, auth, token):
                     break
                 case '1':
                     CadastroProduto.CadastrarProduto(mydb)
+                case '2':
+                    BuscarProdutos.ProdutosNome(mydb)
                 case '3':
-                    BuscarProdutos.ProdutosbyID(mydb)
-                case '4':
                     AtualizarProdutoByID.AtualizarProdutoID(mydb)
-                case '5':
+                case '4':
                     DeletarProdutoID.DeletarProdutoID(mydb)
-                    
 
 
 def CaseCompra(mydb, auth, token):
-    execucao = True
-    while execucao:
+    while token:
         print('''Escolha Uma Opções\n
     0 - Voltar\n
     1 - Comprar produto\n
@@ -96,8 +100,7 @@ def CaseCompra(mydb, auth, token):
                     BuscaCompra.ComprasbyID(mydb)
 
 def CaseVendedor(mydb, auth, token):
-    execucao = True
-    while execucao:
+    while token:
         print('''Opções\n
     0 - Voltar\n
     1 - Cadastrar vendedor\n
@@ -105,14 +108,18 @@ def CaseVendedor(mydb, auth, token):
     3 - Deletar vendedor \n
     4 - Atualizar vendedor\n''')
         escolha = input('escolha Uma Opção: ')
-        match escolha:
-            case '0':
-                return
-            case '1':
-                Vendedor.setVendedor(mydb)
-            case '2':
-                Vendedor.listVendedor(mydb)
-            case '3':
-                Vendedor.deleteVendedor(mydb)   
-            case '4':
-                Vendedor.atualizarVendedor(mydb)
+        auth()
+        if token is None:
+            return
+        else:
+            match escolha:
+                case '0':
+                    return
+                case '1':
+                    Vendedor.setVendedor(mydb)
+                case '2':
+                    Vendedor.listVendedor(mydb)
+                case '3':
+                    Vendedor.deleteVendedor(mydb)   
+                case '4':
+                    Vendedor.atualizarVendedor(mydb)

@@ -1,4 +1,5 @@
 import json
+from bson import json_util
 
 import Produto.deletar as DeletarUsuario
 import Usuario.deletar  as DeletarUsuario
@@ -16,8 +17,10 @@ import vendedor as Vendedor
 
 def CaseUsuario(mydb, conR, auth, token):
     mycol = mydb.Cliente
-    users = json.dumps(mycol.find())
-    conR.set("users-mongo", users)
+    users = mycol.find()
+    user_list = [user for user in users]
+    users_json = json.dumps(user_list, default=json_util.default)
+    conR.set("users-mongo", users_json)
     while token:
         print('''Opções\n
     0 - Voltar\n
@@ -39,7 +42,7 @@ def CaseUsuario(mydb, conR, auth, token):
                 case '1':
                     CadastroCliente.CadastrarUsuario(mydb)
                 case '2':
-                    BuscarUsuario.PegarUsuarios(mydb, conR)
+                    BuscarUsuario.PegarUsuarios(conR)
                 case '3':
                     BuscarUsuario.UsuariobyID(mydb)
                 case '4':
@@ -47,7 +50,7 @@ def CaseUsuario(mydb, conR, auth, token):
                 case '5':
                     AtualizacaoUsuario.AtualizarUsuarioID(mydb)
                 case '6':
-                    Favoritos.ListaDesejos(mydb)
+                    Favoritos.ListaDesejos(mydb, conR)
 
 
 def CaseProduto(mydb, auth, token):
@@ -77,7 +80,7 @@ def CaseProduto(mydb, auth, token):
                     DeletarProdutoID.DeletarProdutoID(mydb)
 
 
-def CaseCompra(mydb, auth, token):
+def CaseCompra(mydb, auth, token, conR):
     while token:
         print('''Escolha Uma Opções\n
     0 - Voltar\n
@@ -93,7 +96,7 @@ def CaseCompra(mydb, auth, token):
                 case '0':
                     return
                 case '1':
-                    ComprarProduto.Compra(mydb)
+                    ComprarProduto.Compra(mydb, conR)
                 case '2':
                     BuscaCompra.PegarCompras(mydb)
                 case '3':

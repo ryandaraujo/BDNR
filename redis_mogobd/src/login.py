@@ -74,7 +74,7 @@ def Menu(mydb):
                 case '0':
                     break
                 case '1':
-                    ListaCase.CaseCompra(mydb, Autenticacao, token)
+                    ListaCase.CaseCompra(mydb, Autenticacao, token, conR)
                 case '2':
                     ListaCase.CaseUsuario(mydb, conR, Autenticacao, token)
                 case '3':

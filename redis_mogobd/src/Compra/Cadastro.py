@@ -2,11 +2,11 @@ import Usuario.FindQuery as Procurar
 import Produto.FindQuery as ProcurarProduto
 from bson.objectid import ObjectId
 
-def Compra(mydb):
+def Compra(mydb, conR):
     mycol = mydb.Compras
     mycol2 = mydb.Produto
     mycol3= mydb.Cliente
-    Procurar.PegarUsuarios(mydb)
+    Procurar.PegarUsuarios(conR)
     Usuario =  input('Escreva seu id de usuário: ')
     ProcurarProduto.PegarProdutos(mydb)
     Produto  =  input('Escreva o id do produto: ')

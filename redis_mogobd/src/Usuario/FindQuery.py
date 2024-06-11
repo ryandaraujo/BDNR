@@ -1,12 +1,8 @@
 from bson.objectid import ObjectId
 
-def PegarUsuarios(mydb):
-    mycol = mydb.Cliente
-    print("\n####SORT####") 
-    mydoc = mycol.find().sort("nome")
-    for x in mydoc:
-        print(x)
-        print("\n")
+def PegarUsuarios(conR): 
+    mydoc = conR.get("users").decode()
+    print(mydoc)
     return mydoc
 
 def UsuariobyID(mydb):

@@ -29,7 +29,7 @@ class JSONEncoder(json.JSONEncoder):
 def Login():
     global mydb
     email = input("\nDigite o email do usuário: ")
-    senha = input("\nDigite a senha do usuário: ")
+    senha = input("Digite a senha do usuário: ")
     if email and senha:
         mycol = mydb.Cliente
         users = list(mycol.find())

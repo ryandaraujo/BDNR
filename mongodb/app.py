@@ -1,5 +1,6 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from pprint import pprint
 
 mydb = ''
 class Connect:
@@ -99,6 +100,59 @@ class HandlerCliente:
         nome = input("Nome do cliente que será removido: ")
         mycol.delete_one({"cli_nome": nome})
         print("Deleção realizada com sucesso!")
+
+    def list_all():
+        global mydb
+        mycol = mydb.Cliente
+        print("\n### Listagem de clientes ###")
+        clientes = mycol.find()
+        for cliente in clientes:
+            pprint(cliente)
+
+    def add_to_favorites():
+        global mydb
+        mycol = mydb.Cliente
+        print("\n####ADD TO FAVORITES####")
+        nome = input("Nome do cliente: ")
+        produto = input("Nome do produto favorito: ")
+        cliente = mycol.find_one({"cli_nome": nome})
+        if cliente:
+            try:
+                produto_encontrado = HandlerProduto.findOne(produto)
+                if produto_encontrado:
+                    try:
+                        mycol.update_one(
+                            {"cli_nome": nome},
+                            {"$addToSet": {"favoritos": produto_encontrado}}
+                        )
+                        print(f"Produto '{produto}' adicionado aos favoritos de '{nome}'.")
+                    except Exception as e:
+                        print(f"Falha ao adicionar produto aos favoritos: {e}")
+                else:
+                    print(f"Produto '{produto}' não encontrado.")
+            except:
+                print("Erro ao adicionar produto aos favoritos.")
+        else:
+            print(f"Cliente '{nome}' não encontrado.")
+
+    def remove_from_favorites():
+        global mydb
+        mycol = mydb.Cliente
+        print("\n####REMOVE FROM FAVORITES####")
+        nome = input("Nome do cliente: ")
+        produto = input("Nome do produto favorito: ")
+        cliente = mycol.find_one({"cli_nome": nome})
+        if cliente:
+            try:
+                mycol.update_one(
+                    {"cli_nome": nome},
+                    {"$pull": {"favoritos": {"pro_nome": produto}}}
+                )
+                print(f"Produto '{produto}' removido dos favoritos de '{nome}'.")
+            except:
+                print("Erro ao remover produto dos favoritos.")
+        else:
+            print(f"Cliente '{nome}' não encontrado.")
 
 
 class HandlerCompras:
@@ -272,8 +326,9 @@ class HandlerProduto:
         print("\n####FIND ONE####")
         try:
             query = mycol.find_one({"pro_nome": produto})
-            print(query)
+            return query
         except: print("Produto não encontrado!")
+
     def update(self):
         global mydb
         mycol = mydb.Produto
@@ -339,9 +394,13 @@ def menuCliente():
 \n2 - Encontrar
 \n3 - Atualizar
 \n4 - Remover
+\n5 - Listar clientes
+\n6 - Remover produto dos favoritos
+\n7 - Adicionar produto aos favoritos
 \n0 - Sair
 \nOpção: """)
-        if option1 == '1':
+        if option1 == '0': return
+        elif option1 == '1':
             HandlerCliente.insert()
         elif option1 == '2':
             nome = input("Nome do cliente: ")
@@ -350,6 +409,12 @@ def menuCliente():
             HandlerCliente.update()
         elif option1 == '4':
             HandlerCliente.delete()
+        elif option1 == '5':
+            HandlerCliente.list_all()
+        elif option1 == '6':
+            HandlerCliente.remove_from_favorites()
+        elif option1 == '7':
+            HandlerCliente.add_to_favorites()
         else: print("Opção inválida")
 
 def menuVendedor():
